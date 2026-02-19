@@ -1,6 +1,8 @@
 using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
+using MyGame.ECS.Item;
+using MyGame.ECS.Wave;
 
 namespace MyGame.ECS.Authoring
 {
@@ -41,6 +43,32 @@ namespace MyGame.ECS.Authoring
         [SerializeField]
         [Tooltip("體碰傷害（碰到玩家時造成的傷害）")]
         private int _contactDamage = 1;
+
+        [Header("Bullet Pattern")]
+        [SerializeField]
+        [Tooltip("Bullet pattern type: 0=STRAIGHT, 1=FAN, 2=SPIRAL, 3=AIMED")]
+        private int _patternType = 0;
+
+        [SerializeField]
+        [Tooltip("Number of bullets per shot (used by FAN pattern)")]
+        private int _bulletCount = 1;
+
+        [SerializeField]
+        [Tooltip("Total spread angle in degrees (used by FAN pattern)")]
+        private float _spreadAngle = 60f;
+
+        [SerializeField]
+        [Tooltip("Rotation speed in degrees per shot (used by SPIRAL pattern)")]
+        private float _spiralSpeed = 15f;
+
+        [Header("Item Drop")]
+        [SerializeField]
+        [Tooltip("Item type to drop on death (0=Score, 1=Power, 2=Bomb)")]
+        private int _dropType = 0;
+
+        [SerializeField]
+        [Tooltip("Drop probability 0.0-1.0")]
+        private float _dropChance = 0.3f;
 
         [Header("Score")]
         [SerializeField]
@@ -101,6 +129,27 @@ namespace MyGame.ECS.Authoring
                     {
                         Value = authoring._bulletSpeed
                     });
+                }
+
+                // Item Drop（Phase D）
+                AddComponent(entity, new ItemDropData
+                {
+                    DropType = authoring._dropType,
+                    DropChance = authoring._dropChance
+                });
+
+                // Bullet pattern (Wave system)
+                AddComponent(entity, new BulletPatternData
+                {
+                    PatternType = authoring._patternType,
+                    BulletCount = authoring._bulletCount,
+                    SpreadAngle = authoring._spreadAngle,
+                    SpiralSpeed = authoring._spiralSpeed
+                });
+
+                if (authoring._patternType == BulletPatternData.SPIRAL)
+                {
+                    AddComponent(entity, new SpiralAngle { Value = 0f });
                 }
             }
         }

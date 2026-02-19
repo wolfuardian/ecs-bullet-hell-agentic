@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Entities;
+using MyGame.ECS.Item;
 
 namespace MyGame.ECS.Authoring
 {
@@ -49,6 +50,15 @@ namespace MyGame.ECS.Authoring
         [SerializeField]
         [Tooltip("擦彈判定半徑（大於碰撞半徑）")]
         private float _grazeRadius = 0.5f;
+
+        [Header("Power")]
+        [SerializeField]
+        [Tooltip("Initial power level")]
+        private int _initialPowerLevel = 0;
+
+        [SerializeField]
+        [Tooltip("Maximum power level cap")]
+        private int _maxPowerLevel = 4;
 
         [Header("碰撞與血量")]
         [SerializeField]
@@ -103,6 +113,13 @@ namespace MyGame.ECS.Authoring
                 {
                     Count = 0,
                     GrazeRadius = authoring._grazeRadius
+                });
+
+                // Power（Phase D）
+                AddComponent(entity, new PowerLevelData
+                {
+                    Level = authoring._initialPowerLevel,
+                    MaxLevel = authoring._maxPowerLevel
                 });
 
                 // Bomb（Phase C）

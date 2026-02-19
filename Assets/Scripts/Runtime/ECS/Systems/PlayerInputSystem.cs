@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using MyGame.ECS.GameState;
 
 namespace MyGame.ECS.Player
 {
@@ -21,6 +22,7 @@ namespace MyGame.ECS.Player
     {
         private @InputSystem_Actions _inputActions;
         private Entity _inputEntity;
+        private Entity _pauseInputEntity;
 
         protected override void OnCreate()
         {
@@ -36,6 +38,14 @@ namespace MyGame.ECS.Player
 
 #if UNITY_EDITOR
             EntityManager.SetName(_inputEntity, "PlayerInput");
+#endif
+
+            // 建立 singleton entity 持有 PauseInputData
+            _pauseInputEntity = EntityManager.CreateEntity();
+            EntityManager.AddComponentData(_pauseInputEntity, new PauseInputData());
+
+#if UNITY_EDITOR
+            EntityManager.SetName(_pauseInputEntity, "PauseInput");
 #endif
         }
 
@@ -54,6 +64,16 @@ namespace MyGame.ECS.Player
                 ShootHeld = shootHeld,
                 FocusHeld = focusHeld,
                 BombPressed = bombPressed
+            });
+
+            // 讀取 Pause / Restart 鍵盤輸入
+            var keyboard = UnityEngine.InputSystem.Keyboard.current;
+            bool pausePressed = keyboard != null && keyboard.escapeKey.wasPressedThisFrame;
+            bool restartPressed = keyboard != null && keyboard.rKey.wasPressedThisFrame;
+            EntityManager.SetComponentData(_pauseInputEntity, new PauseInputData
+            {
+                PausePressed = pausePressed,
+                RestartPressed = restartPressed
             });
 
             // Debug：每 60 幀印一次，或有任何輸入時立即印

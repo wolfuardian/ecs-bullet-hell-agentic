@@ -119,6 +119,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &241360585
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 241360587}
+  - component: {fileID: 241360586}
+  m_Layer: 0
+  m_Name: ItemSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &241360586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241360585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b55f6081c28b0fd449779f843bc11ea8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MyGame.ECS::MyGame.ECS.Authoring.ItemSpawnerAuthoring
+  _itemPrefab: {fileID: 2825803034287346215, guid: a570aae80121ee44995e58df7948c470, type: 3}
+--- !u!4 &241360587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241360585}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &393807082
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,6 +175,8 @@ GameObject:
   - component: {fileID: 393807084}
   - component: {fileID: 393807083}
   - component: {fileID: 393807085}
+  - component: {fileID: 393807087}
+  - component: {fileID: 393807086}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -180,6 +227,34 @@ MonoBehaviour:
   _maxMultiplier: 3
   _scalingInterval: 30
   _baseSpawnInterval: 2
+--- !u!114 &393807086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393807082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a00bc258d4c77ee41b4b03889e10fb7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MyGame.ECS::MyGame.ECS.Authoring.WaveAuthoring
+  _waveInterval: 10
+  _firstWaveDelay: 3
+  _enemiesPerWave: 3
+  _spawnInterval: 0.5
+--- !u!114 &393807087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393807082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e65755c645d3644c84966235958177e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MyGame.ECS::MyGame.ECS.Authoring.GameStateAuthoring
 --- !u!1 &837090158
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,6 +394,8 @@ MonoBehaviour:
   _bombCooldown: 1
   _bombDuration: 3
   _grazeRadius: 0.5
+  _initialPowerLevel: 0
+  _maxPowerLevel: 4
   _collisionRadius: 0.08
   _maxHealth: 1
   _invincibilityDuration: 2
@@ -424,3 +501,4 @@ SceneRoots:
   - {fileID: 894046713}
   - {fileID: 837090160}
   - {fileID: 393807084}
+  - {fileID: 241360587}
