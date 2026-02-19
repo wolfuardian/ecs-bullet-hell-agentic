@@ -28,6 +28,8 @@ namespace MyGame.ECS.Player
             _inputActions = new @InputSystem_Actions();
             _inputActions.Player.Enable();
 
+            Debug.Log("[PlayerInputSystem] OnCreate — InputActions created and Player map enabled.");
+
             // 建立 singleton entity 持有 PlayerInputData
             _inputEntity = EntityManager.CreateEntity();
             EntityManager.AddComponentData(_inputEntity, new PlayerInputData());
@@ -36,6 +38,8 @@ namespace MyGame.ECS.Player
             EntityManager.SetName(_inputEntity, "PlayerInput");
 #endif
         }
+
+        private int _logCooldown;
 
         protected override void OnUpdate()
         {
@@ -51,6 +55,15 @@ namespace MyGame.ECS.Player
                 FocusHeld = focusHeld,
                 BombPressed = bombPressed
             });
+
+            // Debug：每 60 幀印一次，或有任何輸入時立即印
+            _logCooldown--;
+            var hasInput = math.lengthsq(moveValue) > 0.01f || shootHeld || focusHeld || bombPressed;
+            if (hasInput || _logCooldown <= 0)
+            {
+                Debug.Log($"[PlayerInputSystem] Move=({moveValue.x:F2},{moveValue.y:F2}) Shoot={shootHeld} Focus={focusHeld} Bomb={bombPressed}");
+                _logCooldown = 60;
+            }
         }
 
         protected override void OnDestroy()
