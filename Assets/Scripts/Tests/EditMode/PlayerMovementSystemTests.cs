@@ -15,7 +15,7 @@ namespace MyGame.Tests
     {
         private World _world;
         private EntityManager _em;
-        private PlayerMovementSystem _movementSystem;
+        private SystemHandle _movementSystemHandle;
 
         [SetUp]
         public void SetUp()
@@ -23,8 +23,8 @@ namespace MyGame.Tests
             _world = new World("TestWorld");
             _em = _world.EntityManager;
 
-            // 手動建立 PlayerMovementSystem
-            _movementSystem = _world.GetOrCreateSystem<PlayerMovementSystem>();
+            // ISystem 透過 SystemHandle 操作
+            _movementSystemHandle = _world.GetOrCreateSystem<PlayerMovementSystem>();
         }
 
         [TearDown]
@@ -60,6 +60,11 @@ namespace MyGame.Tests
             return (player, input);
         }
 
+        private void UpdateMovementSystem()
+        {
+            _movementSystemHandle.Update(_world.Unmanaged);
+        }
+
         [Test]
         public void PlayerMoves_WhenMoveInputProvided()
         {
@@ -75,12 +80,11 @@ namespace MyGame.Tests
                 BombPressed = false
             });
 
-            // Act — 手動觸發 system update
-            _movementSystem.Update(_world.Unmanaged);
+            // Act
+            UpdateMovementSystem();
 
             // Assert
             var pos = _em.GetComponentData<LocalTransform>(player).Position;
-            // 移動方向應為 +X（向右）
             Assert.Greater(pos.x, 0f, "Player should move right when MoveInput.x > 0");
             Assert.AreEqual(0f, pos.y, 0.001f, "Y should remain 0 for horizontal input");
             Assert.AreEqual(0f, pos.z, 0.001f, "Z should always remain 0 (XY plane)");
@@ -100,7 +104,7 @@ namespace MyGame.Tests
             });
 
             // Act
-            _movementSystem.Update(_world.Unmanaged);
+            UpdateMovementSystem();
 
             // Assert
             var pos = _em.GetComponentData<LocalTransform>(player).Position;
@@ -127,7 +131,7 @@ namespace MyGame.Tests
             });
 
             // Act
-            _movementSystem.Update(_world.Unmanaged);
+            UpdateMovementSystem();
 
             // 取得 focus 模式下的位移
             var focusPos = _em.GetComponentData<LocalTransform>(player).Position;
@@ -145,7 +149,7 @@ namespace MyGame.Tests
             });
 
             // Act
-            _movementSystem.Update(_world.Unmanaged);
+            UpdateMovementSystem();
             var normalPos = _em.GetComponentData<LocalTransform>(player).Position;
 
             // Assert — Focus 模式下移動距離應比正常短
@@ -169,7 +173,7 @@ namespace MyGame.Tests
             });
 
             // Act
-            _movementSystem.Update(_world.Unmanaged);
+            UpdateMovementSystem();
 
             // Assert — Z 必須永遠為 0（XY 平面）
             var pos = _em.GetComponentData<LocalTransform>(player).Position;

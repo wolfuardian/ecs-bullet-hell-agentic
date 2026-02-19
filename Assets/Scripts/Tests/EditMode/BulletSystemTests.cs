@@ -15,8 +15,9 @@ namespace MyGame.Tests
     {
         private World _world;
         private EntityManager _em;
-        private BulletMovementSystem _movementSystem;
-        private BulletLifetimeSystem _lifetimeSystem;
+        private SystemHandle _movementSystemHandle;
+        private SystemHandle _lifetimeSystemHandle;
+        private SystemHandle _ecbSystemHandle;
 
         [SetUp]
         public void SetUp()
@@ -24,11 +25,10 @@ namespace MyGame.Tests
             _world = new World("TestWorld");
             _em = _world.EntityManager;
 
-            _movementSystem = _world.GetOrCreateSystem<BulletMovementSystem>();
-            _lifetimeSystem = _world.GetOrCreateSystem<BulletLifetimeSystem>();
-
             // BulletLifetimeSystem 需要 EndSimulationEntityCommandBufferSystem
-            _world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+            _ecbSystemHandle = _world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+            _movementSystemHandle = _world.GetOrCreateSystem<BulletMovementSystem>();
+            _lifetimeSystemHandle = _world.GetOrCreateSystem<BulletLifetimeSystem>();
         }
 
         [TearDown]
@@ -65,7 +65,7 @@ namespace MyGame.Tests
                 velocity: new float3(0f, 20f, 0f));
 
             // Act
-            _movementSystem.Update(_world.Unmanaged);
+            _movementSystemHandle.Update(_world.Unmanaged);
 
             // Assert
             var pos = _em.GetComponentData<LocalTransform>(bullet).Position;
@@ -82,7 +82,7 @@ namespace MyGame.Tests
             var bullet = CreateBullet(lifetime: initialLifetime);
 
             // Act
-            _lifetimeSystem.Update(_world.Unmanaged);
+            _lifetimeSystemHandle.Update(_world.Unmanaged);
 
             // Assert
             var remaining = _em.GetComponentData<BulletLifetime>(bullet).Value;
@@ -97,11 +97,10 @@ namespace MyGame.Tests
             var bullet = CreateBullet(lifetime: 0.001f);
 
             // Act — 跑 lifetime system + ECB playback
-            _lifetimeSystem.Update(_world.Unmanaged);
+            _lifetimeSystemHandle.Update(_world.Unmanaged);
 
             // ECB 在 EndSimulation 時 playback，手動觸發
-            var ecbSystem = _world.GetExistingSystem<EndSimulationEntityCommandBufferSystem>();
-            ecbSystem.Update(_world.Unmanaged);
+            _ecbSystemHandle.Update(_world.Unmanaged);
 
             // Assert — Entity 應已被銷毀
             Assert.IsFalse(_em.Exists(bullet),
@@ -115,9 +114,8 @@ namespace MyGame.Tests
             var bullet = CreateBullet(lifetime: 10f);
 
             // Act
-            _lifetimeSystem.Update(_world.Unmanaged);
-            var ecbSystem = _world.GetExistingSystem<EndSimulationEntityCommandBufferSystem>();
-            ecbSystem.Update(_world.Unmanaged);
+            _lifetimeSystemHandle.Update(_world.Unmanaged);
+            _ecbSystemHandle.Update(_world.Unmanaged);
 
             // Assert — Entity 應仍存在
             Assert.IsTrue(_em.Exists(bullet),
@@ -136,7 +134,7 @@ namespace MyGame.Tests
                 velocity: new float3(5f, 0f, 0f));
 
             // Act
-            _movementSystem.Update(_world.Unmanaged);
+            _movementSystemHandle.Update(_world.Unmanaged);
 
             // Assert
             var pos1 = _em.GetComponentData<LocalTransform>(bullet1).Position;
