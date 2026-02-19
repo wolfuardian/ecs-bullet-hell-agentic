@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using MyGame.ECS.Collision;
 
 namespace MyGame.ECS.Bullet
 {
@@ -56,6 +57,8 @@ namespace MyGame.ECS.Bullet
                 {
                     Value = new float3(0f, speed, 0f)
                 });
+                // Phase B: 標記為玩家子彈，用於碰撞系統區分
+                ecb.AddComponent<PlayerBulletTag>(bulletEntity);
             }
         }
     }
