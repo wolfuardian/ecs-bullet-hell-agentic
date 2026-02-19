@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Unity.Core;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -19,6 +20,9 @@ namespace MyGame.Tests
         private SystemHandle _lifetimeSystemHandle;
         private SystemHandle _ecbSystemHandle;
 
+        /// <summary>測試用固定 DeltaTime（1/60 秒）。</summary>
+        private const float TEST_DELTA_TIME = 1f / 60f;
+
         [SetUp]
         public void SetUp()
         {
@@ -38,6 +42,18 @@ namespace MyGame.Tests
             {
                 _world.Dispose();
             }
+        }
+
+        /// <summary>
+        /// 推進 World 時間並更新指定 System。
+        /// </summary>
+        private void AdvanceTimeAndUpdate(SystemHandle handle)
+        {
+            var currentTime = _world.Time.ElapsedTime;
+            _world.SetTime(new TimeData(
+                elapsedTime: currentTime + TEST_DELTA_TIME,
+                deltaTime: TEST_DELTA_TIME));
+            handle.Update(_world.Unmanaged);
         }
 
         /// <summary>
@@ -65,7 +81,7 @@ namespace MyGame.Tests
                 velocity: new float3(0f, 20f, 0f));
 
             // Act
-            _movementSystemHandle.Update(_world.Unmanaged);
+            AdvanceTimeAndUpdate(_movementSystemHandle);
 
             // Assert
             var pos = _em.GetComponentData<LocalTransform>(bullet).Position;
@@ -82,7 +98,7 @@ namespace MyGame.Tests
             var bullet = CreateBullet(lifetime: initialLifetime);
 
             // Act
-            _lifetimeSystemHandle.Update(_world.Unmanaged);
+            AdvanceTimeAndUpdate(_lifetimeSystemHandle);
 
             // Assert
             var remaining = _em.GetComponentData<BulletLifetime>(bullet).Value;
@@ -97,7 +113,7 @@ namespace MyGame.Tests
             var bullet = CreateBullet(lifetime: 0.001f);
 
             // Act — 跑 lifetime system + ECB playback
-            _lifetimeSystemHandle.Update(_world.Unmanaged);
+            AdvanceTimeAndUpdate(_lifetimeSystemHandle);
 
             // ECB 在 EndSimulation 時 playback，手動觸發
             _ecbSystemHandle.Update(_world.Unmanaged);
@@ -114,7 +130,7 @@ namespace MyGame.Tests
             var bullet = CreateBullet(lifetime: 10f);
 
             // Act
-            _lifetimeSystemHandle.Update(_world.Unmanaged);
+            AdvanceTimeAndUpdate(_lifetimeSystemHandle);
             _ecbSystemHandle.Update(_world.Unmanaged);
 
             // Assert — Entity 應仍存在
@@ -134,7 +150,7 @@ namespace MyGame.Tests
                 velocity: new float3(5f, 0f, 0f));
 
             // Act
-            _movementSystemHandle.Update(_world.Unmanaged);
+            AdvanceTimeAndUpdate(_movementSystemHandle);
 
             // Assert
             var pos1 = _em.GetComponentData<LocalTransform>(bullet1).Position;

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Unity.Core;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -16,6 +17,9 @@ namespace MyGame.Tests
         private World _world;
         private EntityManager _em;
         private SystemHandle _movementSystemHandle;
+
+        /// <summary>測試用固定 DeltaTime（1/60 秒）。</summary>
+        private const float TEST_DELTA_TIME = 1f / 60f;
 
         [SetUp]
         public void SetUp()
@@ -62,6 +66,12 @@ namespace MyGame.Tests
 
         private void UpdateMovementSystem()
         {
+            // 手動推進 World 時間，否則 DeltaTime=0 導致移動量為零
+            var currentTime = _world.Time.ElapsedTime;
+            _world.SetTime(new TimeData(
+                elapsedTime: currentTime + TEST_DELTA_TIME,
+                deltaTime: TEST_DELTA_TIME));
+
             _movementSystemHandle.Update(_world.Unmanaged);
         }
 
