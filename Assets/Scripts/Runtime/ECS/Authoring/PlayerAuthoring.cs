@@ -5,14 +5,19 @@ namespace MyGame.ECS.Authoring
 {
     /// <summary>
     /// 掛在場景中玩家 GameObject 上的 Authoring Component。
-    /// Baker 會將其轉換為 ECS 的 PlayerTag + MoveSpeed + BulletPrefabRef + ShootCooldown。
+    /// Baker 會將其轉換為 ECS 的 PlayerTag + MoveSpeed + FocusSpeed
+    /// + BulletPrefabRef + ShootCooldown + BulletSpeedData。
     /// </summary>
     public class PlayerAuthoring : MonoBehaviour
     {
         [Header("移動")]
         [SerializeField]
-        [Tooltip("玩家移動速度")]
+        [Tooltip("正常移動速度")]
         private float _moveSpeed = 10f;
+
+        [SerializeField]
+        [Tooltip("低速模式（Focus）移動速度")]
+        private float _focusSpeed = 4f;
 
         [Header("射擊")]
         [SerializeField]
@@ -37,6 +42,10 @@ namespace MyGame.ECS.Authoring
                 AddComponent(entity, new Player.MoveSpeed
                 {
                     Value = authoring._moveSpeed
+                });
+                AddComponent(entity, new Player.FocusSpeed
+                {
+                    Value = authoring._focusSpeed
                 });
 
                 if (authoring._bulletPrefab != null)

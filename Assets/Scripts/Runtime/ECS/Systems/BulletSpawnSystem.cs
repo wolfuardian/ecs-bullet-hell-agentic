@@ -6,7 +6,7 @@ using Unity.Transforms;
 namespace MyGame.ECS.Bullet
 {
     /// <summary>
-    /// 讀取玩家攻擊輸入，以 ECB 生成子彈 Entity。
+    /// 讀取玩家射擊輸入（Z 鍵壓住），以 ECB 生成子彈 Entity。
     /// 子彈往 +Y 方向飛（東方 Project 風格縱向 STG）。
     /// </summary>
     [BurstCompile]
@@ -26,7 +26,7 @@ namespace MyGame.ECS.Bullet
         public void OnUpdate(ref SystemState state)
         {
             var input = SystemAPI.GetSingleton<Player.PlayerInputData>();
-            if (!input.AttackPressed)
+            if (!input.ShootHeld)
                 return;
 
             var dt = SystemAPI.Time.DeltaTime;
