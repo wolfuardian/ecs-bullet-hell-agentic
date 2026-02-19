@@ -32,6 +32,24 @@ namespace MyGame.ECS.Authoring
         [Tooltip("子彈飛行速度")]
         private float _bulletSpeed = 20f;
 
+        [Header("Bomb")]
+        [SerializeField]
+        [Tooltip("初始炸彈庫存數量")]
+        private int _bombStock = 3;
+
+        [SerializeField]
+        [Tooltip("炸彈使用冷卻時間（秒）")]
+        private float _bombCooldown = 1.0f;
+
+        [SerializeField]
+        [Tooltip("炸彈效果持續時間（秒）")]
+        private float _bombDuration = 3.0f;
+
+        [Header("Graze")]
+        [SerializeField]
+        [Tooltip("擦彈判定半徑（大於碰撞半徑）")]
+        private float _grazeRadius = 0.5f;
+
         [Header("碰撞與血量")]
         [SerializeField]
         [Tooltip("玩家 hitbox 半徑（東方：極小，0.05-0.1）")]
@@ -78,6 +96,22 @@ namespace MyGame.ECS.Authoring
                 AddComponent(entity, new Collision.InvincibilityDuration
                 {
                     Value = authoring._invincibilityDuration
+                });
+
+                // Graze（Phase C）
+                AddComponent(entity, new Graze.GrazeData
+                {
+                    Count = 0,
+                    GrazeRadius = authoring._grazeRadius
+                });
+
+                // Bomb（Phase C）
+                AddComponent(entity, new Bomb.BombData
+                {
+                    Stock = authoring._bombStock,
+                    CooldownTimer = 0f,
+                    CooldownDuration = authoring._bombCooldown,
+                    BombDuration = authoring._bombDuration
                 });
 
                 if (authoring._bulletPrefab != null)
