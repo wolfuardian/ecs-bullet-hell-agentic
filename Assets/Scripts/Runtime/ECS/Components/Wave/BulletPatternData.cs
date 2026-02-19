@@ -3,8 +3,8 @@ using Unity.Entities;
 namespace MyGame.ECS.Wave
 {
     /// <summary>
-    /// Describes the bullet firing pattern for an enemy.
-    /// Attached to enemies to control how BulletPatternSystem spawns bullets.
+    /// [DEPRECATED] Use MyGame.ECS.Danmaku.DanmakuPattern instead.
+    /// Kept for backward compatibility with legacy BulletPatternSystem.
     /// </summary>
     public struct BulletPatternData : IComponentData
     {

@@ -4,13 +4,17 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using MyGame.ECS.Bullet;
 using MyGame.ECS.Player;
+using MyGame.ECS.Danmaku;
 
 namespace MyGame.ECS.Collision
 {
     /// <summary>
-    /// 偵測敵人子彈（EnemyBulletTag）與玩家（PlayerTag）的碰撞。
-    /// 命中時：銷毀子彈、扣玩家 HP、啟動無敵時間、HP≤0 時加 DeadTag。
-    /// 無敵中（InvincibilityTimer > 0）跳過所有檢查。
+    /// Detects enemy bullet (EnemyBulletTag) vs player (PlayerTag) collision.
+    /// Supports two bullet types:
+    /// - Legacy bullets with CollisionRadius (circle-only)
+    /// - New danmaku bullets with BulletHitbox (multi-shape)
+    /// On hit: destroys bullet, damages player HP, starts invincibility, adds DeadTag if HP &lt;= 0.
+    /// Skips all checks while player is invincible (InvincibilityTimer &gt; 0).
     /// </summary>
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -32,7 +36,7 @@ namespace MyGame.ECS.Collision
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-            // 取得玩家資料（假設單一玩家）
+            // Get player data (single player assumption)
             float3 playerPos = default;
             float playerR = 0f;
             int playerHp = 0;
@@ -57,19 +61,20 @@ namespace MyGame.ECS.Collision
                 invDuration = invDur.ValueRO.Value;
                 playerEntity = entity;
                 playerFound = true;
-                break; // 單一玩家
+                break; // single player
             }
 
             if (!playerFound || invTimer > 0f)
-                return; // 玩家無敵或已死——跳過
+                return;
 
             bool playerHit = false;
             int totalDamage = 0;
 
+            // --- Loop 1: Legacy bullets with CollisionRadius (no BulletHitbox) ---
             foreach (var (bulletTransform, bulletRadius, bulletDmg, bulletEntity) in
                 SystemAPI.Query<RefRO<LocalTransform>, RefRO<CollisionRadius>, RefRO<DamageOnContact>>()
                     .WithAll<BulletTag, EnemyBulletTag>()
-                    .WithNone<DeadTag>()
+                    .WithNone<DeadTag, BulletHitbox>()
                     .WithEntityAccess())
             {
                 var bulletPos = bulletTransform.ValueRO.Position;
@@ -82,8 +87,33 @@ namespace MyGame.ECS.Collision
                     ecb.DestroyEntity(bulletEntity);
                     totalDamage += bulletDmg.ValueRO.Value;
                     playerHit = true;
-                    // 東方慣例：一幀只算一次命中（無敵會在下一幀生效）
                     break;
+                }
+            }
+
+            // --- Loop 2: Danmaku bullets with BulletHitbox ---
+            if (!playerHit)
+            {
+                var playerPos2 = playerPos.xy;
+
+                foreach (var (bulletTransform, hitbox, motion, bulletDmg, bulletEntity) in
+                    SystemAPI.Query<RefRO<LocalTransform>, RefRO<BulletHitbox>,
+                        RefRO<BulletMotion>, RefRO<DamageOnContact>>()
+                        .WithAll<BulletTag, EnemyBulletTag>()
+                        .WithNone<DeadTag, SpawnDelay>()
+                        .WithEntityAccess())
+                {
+                    var bulletPos2 = bulletTransform.ValueRO.Position.xy;
+
+                    if (HitboxCollisionUtils.TestHitbox(
+                        playerPos2, playerR,
+                        bulletPos2, hitbox.ValueRO, motion.ValueRO.Angle))
+                    {
+                        ecb.DestroyEntity(bulletEntity);
+                        totalDamage += bulletDmg.ValueRO.Value;
+                        playerHit = true;
+                        break;
+                    }
                 }
             }
 
@@ -102,7 +132,6 @@ namespace MyGame.ECS.Collision
                 }
                 else
                 {
-                    // 授予無敵時間
                     ecb.SetComponent(playerEntity, new InvincibilityTimer
                     {
                         Value = invDuration
