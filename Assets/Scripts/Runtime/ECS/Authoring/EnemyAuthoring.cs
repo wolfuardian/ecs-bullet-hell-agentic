@@ -29,6 +29,19 @@ namespace MyGame.ECS.Authoring
         [Tooltip("敵彈飛行速度")]
         private float _bulletSpeed = 8f;
 
+        [Header("碰撞與血量")]
+        [SerializeField]
+        [Tooltip("敵人 hitbox 半徑（0.3-0.5 典型值）")]
+        private float _collisionRadius = 0.4f;
+
+        [SerializeField]
+        [Tooltip("敵人最大 HP")]
+        private int _maxHealth = 3;
+
+        [SerializeField]
+        [Tooltip("體碰傷害（碰到玩家時造成的傷害）")]
+        private int _contactDamage = 1;
+
         public class Baker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring)
@@ -42,6 +55,21 @@ namespace MyGame.ECS.Authoring
                         authoring._velocity.x,
                         authoring._velocity.y,
                         authoring._velocity.z)
+                });
+
+                // 碰撞與血量（Phase B）
+                AddComponent(entity, new Collision.CollisionRadius
+                {
+                    Value = authoring._collisionRadius
+                });
+                AddComponent(entity, new Collision.HealthData
+                {
+                    Current = authoring._maxHealth,
+                    Max = authoring._maxHealth
+                });
+                AddComponent(entity, new Collision.DamageOnContact
+                {
+                    Value = authoring._contactDamage
                 });
 
                 if (authoring._bulletPrefab != null)

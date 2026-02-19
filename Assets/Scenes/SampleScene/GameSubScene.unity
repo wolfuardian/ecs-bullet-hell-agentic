@@ -119,6 +119,55 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &837090158
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 837090160}
+  - component: {fileID: 837090159}
+  m_Layer: 0
+  m_Name: EnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &837090159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837090158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 161f7e81adfc23e4aab5462e8e140c7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MyGame.ECS::MyGame.ECS.Authoring.EnemySpawnerAuthoring
+  _enemyPrefab: {fileID: 4345310200811683056, guid: f9ca542e159a1924692a471bdcef7d9a, type: 3}
+  _spawnInterval: 2
+  _spawnMinX: -1.5
+  _spawnMaxX: 1.5
+  _spawnY: 4
+--- !u!4 &837090160
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837090158}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &894046711
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,3 +354,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 1910870547}
   - {fileID: 894046713}
+  - {fileID: 837090160}

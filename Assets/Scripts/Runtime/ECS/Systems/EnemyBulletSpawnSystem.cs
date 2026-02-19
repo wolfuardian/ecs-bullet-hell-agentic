@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using MyGame.ECS.Bullet;
+using MyGame.ECS.Collision;
 
 namespace MyGame.ECS.Enemy
 {
@@ -52,6 +53,8 @@ namespace MyGame.ECS.Enemy
                 {
                     Value = new float3(0f, -speed, 0f)
                 });
+                // Phase B: 標記為敵人子彈，用於碰撞系統區分
+                ecb.AddComponent<EnemyBulletTag>(bulletEntity);
             }
         }
     }
