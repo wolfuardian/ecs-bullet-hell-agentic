@@ -9,10 +9,9 @@ using MyGame.ECS.Enemy;
 namespace MyGame.ECS.Wave
 {
     /// <summary>
-    /// Fires bullets for enemies that have a BulletPatternData component.
-    /// Supports STRAIGHT, FAN, SPIRAL, and AIMED patterns.
-    /// Runs before EnemyBulletSpawnSystem and manages EnemyShootCooldown
-    /// so the default system will not double-fire for patterned enemies.
+    /// [DEPRECATED] Use DanmakuPatternSystem instead.
+    /// Legacy pattern system for enemies with BulletPatternData.
+    /// Kept temporarily for backward compatibility.
     /// </summary>
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]

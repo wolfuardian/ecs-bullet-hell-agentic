@@ -3,7 +3,9 @@ using Unity.Entities;
 namespace MyGame.ECS.Enemy
 {
     /// <summary>
-    /// 掛在敵人 Entity 上，記錄發射子彈的速度（純量，方向由系統決定）。
+    /// [DEPRECATED] Legacy bullet speed data.
+    /// New enemies use DanmakuPattern.Speed instead.
+    /// Kept for backward compatibility with EnemyBulletSpawnSystem.
     /// </summary>
     public struct EnemyBulletSpeedData : IComponentData
     {

@@ -4,13 +4,14 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using MyGame.ECS.Bullet;
 using MyGame.ECS.Collision;
+using MyGame.ECS.Danmaku;
 
 namespace MyGame.ECS.Enemy
 {
     /// <summary>
-    /// 遞減敵人射擊冷卻，歸零時以 ECB 生成敵彈 Entity。
-    /// 敵彈往 -Y 方向飛（東方 Project 風格：敵人從上往下射）。
-    /// 敵彈掛有 BulletTag + Velocity + BulletLifetime，自動被既有子彈系統處理。
+    /// Legacy prefab-based enemy bullet spawner.
+    /// Only processes enemies with EnemyBulletPrefabRef that do NOT have DanmakuPattern.
+    /// Enemies with DanmakuPattern are handled by DanmakuPatternSystem instead.
     /// </summary>
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -33,7 +34,8 @@ namespace MyGame.ECS.Enemy
             foreach (var (transform, prefabRef, cooldown, bulletSpeed) in
                 SystemAPI.Query<RefRO<LocalTransform>, RefRO<EnemyBulletPrefabRef>,
                     RefRW<EnemyShootCooldown>, RefRO<EnemyBulletSpeedData>>()
-                    .WithAll<EnemyTag>())
+                    .WithAll<EnemyTag>()
+                    .WithNone<DanmakuPattern>())
             {
                 // 遞減冷卻計時器
                 cooldown.ValueRW.Timer -= dt;

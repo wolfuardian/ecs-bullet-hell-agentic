@@ -5,6 +5,7 @@ using Unity.Transforms;
 using MyGame.ECS.Bullet;
 using MyGame.ECS.Collision;
 using MyGame.ECS.Player;
+using MyGame.ECS.Danmaku;
 
 namespace MyGame.ECS.Graze
 {
@@ -12,6 +13,7 @@ namespace MyGame.ECS.Graze
     /// Detects enemy bullets passing near the player within graze radius
     /// but outside collision radius. Increments GrazeData.Count and adds
     /// GrazedTag to the bullet to prevent double-counting.
+    /// Supports both legacy CollisionRadius bullets and new BulletHitbox bullets.
     /// </summary>
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -60,10 +62,11 @@ namespace MyGame.ECS.Graze
             if (!playerFound)
                 return;
 
+            // --- Loop 1: Legacy bullets with CollisionRadius (no BulletHitbox) ---
             foreach (var (bulletTransform, bulletRadius, bulletEntity) in
                 SystemAPI.Query<RefRO<LocalTransform>, RefRO<CollisionRadius>>()
                     .WithAll<BulletTag, EnemyBulletTag>()
-                    .WithNone<DeadTag, GrazedTag>()
+                    .WithNone<DeadTag, GrazedTag, BulletHitbox>()
                     .WithEntityAccess())
             {
                 var bulletPos = bulletTransform.ValueRO.Position;
@@ -77,6 +80,35 @@ namespace MyGame.ECS.Graze
                 {
                     grazeCount++;
                     ecb.AddComponent<GrazedTag>(bulletEntity);
+                }
+            }
+
+            // --- Loop 2: Danmaku bullets with BulletHitbox ---
+            {
+                var playerPos2 = playerPos.xy;
+
+                foreach (var (bulletTransform, hitbox, motion, bulletEntity) in
+                    SystemAPI.Query<RefRO<LocalTransform>, RefRO<BulletHitbox>, RefRO<BulletMotion>>()
+                        .WithAll<BulletTag, EnemyBulletTag>()
+                        .WithNone<DeadTag, GrazedTag, SpawnDelay>()
+                        .WithEntityAccess())
+                {
+                    var bulletPos2 = bulletTransform.ValueRO.Position.xy;
+                    var bulletAngle = motion.ValueRO.Angle;
+
+                    // Use the largest dimension of the hitbox as effective radius
+                    var effectiveR = math.max(hitbox.ValueRO.Size.x, hitbox.ValueRO.Size.y);
+                    var collisionRadiusSum = playerCollisionR + effectiveR;
+                    var grazeRadiusSum = playerGrazeR + effectiveR;
+                    var distSq = math.distancesq(playerPos2, bulletPos2);
+
+                    // Graze zone: outside collision range but inside graze range
+                    if (distSq > collisionRadiusSum * collisionRadiusSum &&
+                        distSq <= grazeRadiusSum * grazeRadiusSum)
+                    {
+                        grazeCount++;
+                        ecb.AddComponent<GrazedTag>(bulletEntity);
+                    }
                 }
             }
 

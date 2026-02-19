@@ -3,8 +3,8 @@ using Unity.Entities;
 namespace MyGame.ECS.Wave
 {
     /// <summary>
-    /// Tracks the current rotation angle for SPIRAL pattern enemies.
-    /// Incremented by BulletPatternSystem each time the enemy fires.
+    /// [DEPRECATED] Use MyGame.ECS.Danmaku.DanmakuSpiralAngle instead.
+    /// Kept for backward compatibility with legacy BulletPatternSystem.
     /// </summary>
     public struct SpiralAngle : IComponentData
     {
