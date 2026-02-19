@@ -7,7 +7,7 @@ namespace MyGame.ECS.Authoring
     /// <summary>
     /// 掛在敵人 Prefab 上的 Authoring Component。
     /// Baker 轉換為 EnemyTag + EnemyVelocity + EnemyShootCooldown
-    /// + EnemyBulletPrefabRef + EnemyBulletSpeedData。
+    /// + EnemyBulletPrefabRef + EnemyBulletSpeedData + ScoreOnDeath。
     /// </summary>
     public class EnemyAuthoring : MonoBehaviour
     {
@@ -42,6 +42,11 @@ namespace MyGame.ECS.Authoring
         [Tooltip("體碰傷害（碰到玩家時造成的傷害）")]
         private int _contactDamage = 1;
 
+        [Header("Score")]
+        [SerializeField]
+        [Tooltip("擊殺此敵人獲得的分數")]
+        private int _scoreValue = 100;
+
         public class Baker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring)
@@ -70,6 +75,12 @@ namespace MyGame.ECS.Authoring
                 AddComponent(entity, new Collision.DamageOnContact
                 {
                     Value = authoring._contactDamage
+                });
+
+                // Score（Phase C）
+                AddComponent(entity, new Score.ScoreOnDeath
+                {
+                    Value = authoring._scoreValue
                 });
 
                 if (authoring._bulletPrefab != null)
