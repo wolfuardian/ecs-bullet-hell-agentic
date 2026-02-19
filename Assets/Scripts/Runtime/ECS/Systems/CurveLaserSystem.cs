@@ -28,10 +28,10 @@ namespace MyGame.ECS.Danmaku
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-            foreach (var (curve, motion, transform, buffer, entity) in
+            foreach (var (curve, motion, transform, entity) in
                 SystemAPI.Query<RefRW<CurveLaser>, RefRW<BulletMotion>,
-                    RefRW<LocalTransform>, DynamicBuffer<CurveLaserPoint>>()
-                    .WithAll<LaserTag>()
+                    RefRW<LocalTransform>>()
+                    .WithAll<LaserTag, CurveLaserPoint>()
                     .WithEntityAccess())
             {
                 ref var m = ref motion.ValueRW;
@@ -52,6 +52,9 @@ namespace MyGame.ECS.Danmaku
                 // Move head entity
                 var dir = new float3(math.cos(m.Angle), math.sin(m.Angle), 0f);
                 transform.ValueRW.Position += dir * m.Speed * dt;
+
+                // Get mutable buffer via EntityManager
+                var buffer = state.EntityManager.GetBuffer<CurveLaserPoint>(entity);
 
                 // Drift existing points by their individual velocities
                 for (int i = 0; i < buffer.Length; i++)

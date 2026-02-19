@@ -132,9 +132,6 @@ namespace MyGame.Tests
             // Assert
             var slowPos = _em.GetComponentData<LocalTransform>(slowBullet).Position;
             var fastPos = _em.GetComponentData<LocalTransform>(fastBullet).Position;
-            Assert.Greater(fastPos.x - 5f, slowPos.x,
-                "Faster bullet should travel further");
-            // Actually fastBullet starts at x=0 too, let me fix the comparison
             Assert.Greater(fastPos.x, slowPos.x,
                 "Faster bullet should have larger X displacement");
         }
