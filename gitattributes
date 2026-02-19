@@ -1,0 +1,123 @@
+# ============================================================
+# Unity .gitattributes — Git LFS + 合併策略
+# ============================================================
+
+# --------------------------------------------------
+# 強制 LF 換行（跨平台一致性）
+# --------------------------------------------------
+* text=auto eol=lf
+
+# --------------------------------------------------
+# Unity 序列化檔案：文字格式 + 禁止自動合併
+# 這些檔案 Git merge 幾乎必爆，標記 binary 讓 Git
+# 直接提示衝突而非嘗試文字合併（產生損壞的 YAML）
+# --------------------------------------------------
+*.unity merge=unityyamlmerge eol=lf
+*.prefab merge=unityyamlmerge eol=lf
+*.asset merge=unityyamlmerge eol=lf
+*.controller merge=unityyamlmerge eol=lf
+*.anim merge=unityyamlmerge eol=lf
+*.overrideController merge=unityyamlmerge eol=lf
+*.playable merge=unityyamlmerge eol=lf
+*.mask merge=unityyamlmerge eol=lf
+*.mesh merge=unityyamlmerge eol=lf
+*.mat merge=unityyamlmerge eol=lf
+*.physicMaterial merge=unityyamlmerge eol=lf
+*.physicsMaterial2D merge=unityyamlmerge eol=lf
+*.lighting merge=unityyamlmerge eol=lf
+*.signal merge=unityyamlmerge eol=lf
+
+# --------------------------------------------------
+# Git LFS — 3D 模型
+# --------------------------------------------------
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.FBX filter=lfs diff=lfs merge=lfs -text
+*.obj filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.dae filter=lfs diff=lfs merge=lfs -text
+*.3ds filter=lfs diff=lfs merge=lfs -text
+*.max filter=lfs diff=lfs merge=lfs -text
+*.ma filter=lfs diff=lfs merge=lfs -text
+*.mb filter=lfs diff=lfs merge=lfs -text
+
+# --------------------------------------------------
+# Git LFS — 貼圖 / 圖片
+# --------------------------------------------------
+*.png filter=lfs diff=lfs merge=lfs -text
+*.PNG filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.tga filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+*.hdr filter=lfs diff=lfs merge=lfs -text
+*.bmp filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.svg filter=lfs diff=lfs merge=lfs -text
+*.ico filter=lfs diff=lfs merge=lfs -text
+
+# --------------------------------------------------
+# Git LFS — 音訊
+# --------------------------------------------------
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+*.aif filter=lfs diff=lfs merge=lfs -text
+*.aiff filter=lfs diff=lfs merge=lfs -text
+*.flac filter=lfs diff=lfs merge=lfs -text
+*.bank filter=lfs diff=lfs merge=lfs -text
+
+# --------------------------------------------------
+# Git LFS — 影片
+# --------------------------------------------------
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.avi filter=lfs diff=lfs merge=lfs -text
+*.webm filter=lfs diff=lfs merge=lfs -text
+
+# --------------------------------------------------
+# Git LFS — 字型
+# --------------------------------------------------
+*.ttf filter=lfs diff=lfs merge=lfs -text
+*.otf filter=lfs diff=lfs merge=lfs -text
+*.woff filter=lfs diff=lfs merge=lfs -text
+*.woff2 filter=lfs diff=lfs merge=lfs -text
+
+# --------------------------------------------------
+# Git LFS — 壓縮 / 二進位
+# --------------------------------------------------
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.7z filter=lfs diff=lfs merge=lfs -text
+*.gz filter=lfs diff=lfs merge=lfs -text
+*.tar filter=lfs diff=lfs merge=lfs -text
+*.unitypackage filter=lfs diff=lfs merge=lfs -text
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.so filter=lfs diff=lfs merge=lfs -text
+*.dylib filter=lfs diff=lfs merge=lfs -text
+*.a filter=lfs diff=lfs merge=lfs -text
+*.exe filter=lfs diff=lfs merge=lfs -text
+
+# --------------------------------------------------
+# Git LFS — Addressables 建置產物（如有需要）
+# --------------------------------------------------
+*.bundle filter=lfs diff=lfs merge=lfs -text
+
+# --------------------------------------------------
+# 確保腳本類檔案為文字
+# --------------------------------------------------
+*.cs text diff=csharp eol=lf
+*.shader text eol=lf
+*.hlsl text eol=lf
+*.cginc text eol=lf
+*.compute text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.asmdef text eol=lf
+*.asmref text eol=lf
+*.inputactions text eol=lf
