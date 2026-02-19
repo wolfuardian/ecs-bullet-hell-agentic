@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using MyGame.ECS.Player;
 using MyGame.ECS.Bullet;
+using MyGame.ECS.Boundary;
 
 namespace MyGame.Tests
 {
@@ -150,6 +151,44 @@ namespace MyGame.Tests
             _em.AddComponentData(entity, new BulletTag());
 
             Assert.IsTrue(_em.HasComponent<BulletTag>(entity));
+        }
+
+        [Test]
+        public void PlayerBoundaryData_StoresAllFields()
+        {
+            var entity = _em.CreateEntity();
+            _em.AddComponentData(entity, new PlayerBoundaryData
+            {
+                MinX = -2f,
+                MaxX = 2f,
+                MinY = -3f,
+                MaxY = 3f
+            });
+
+            var data = _em.GetComponentData<PlayerBoundaryData>(entity);
+            Assert.AreEqual(-2f, data.MinX, 0.001f);
+            Assert.AreEqual(2f, data.MaxX, 0.001f);
+            Assert.AreEqual(-3f, data.MinY, 0.001f);
+            Assert.AreEqual(3f, data.MaxY, 0.001f);
+        }
+
+        [Test]
+        public void BulletBoundaryData_StoresAllFields()
+        {
+            var entity = _em.CreateEntity();
+            _em.AddComponentData(entity, new BulletBoundaryData
+            {
+                MinX = -4f,
+                MaxX = 4f,
+                MinY = -5f,
+                MaxY = 5f
+            });
+
+            var data = _em.GetComponentData<BulletBoundaryData>(entity);
+            Assert.AreEqual(-4f, data.MinX, 0.001f);
+            Assert.AreEqual(4f, data.MaxX, 0.001f);
+            Assert.AreEqual(-5f, data.MinY, 0.001f);
+            Assert.AreEqual(5f, data.MaxY, 0.001f);
         }
     }
 }
